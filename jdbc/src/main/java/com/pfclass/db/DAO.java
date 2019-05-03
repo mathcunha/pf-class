@@ -14,7 +14,7 @@ public class DAO {
     private static final Logger log = LoggerFactory.getLogger(DAO.class);
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/petclinic","root","example");
+        return DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/petclinic?useSSL=false","root","example");
     }
 
     public Connection getPooledConnection() throws IOException, SQLException {
@@ -22,10 +22,10 @@ public class DAO {
     }
 
     public void closeConnection(Connection conn){
-        /*try {
+        try {
             conn.close();
         } catch (SQLException e) {
             log.error("error closing connection", e);
-        }*/
+        }
     }
 }

@@ -22,6 +22,9 @@ public class VetDAO extends DAO {
             conn.commit();
             v = vet;
         }
+
+        stmt.close();
+
         closeConnection(conn);
         return v;
     }
@@ -37,6 +40,7 @@ public class VetDAO extends DAO {
         if (stmt.executeUpdate() > 0) {
             v = vet;
         }
+        stmt.close();
         closeConnection(conn);
         return v;
     }
@@ -51,6 +55,7 @@ public class VetDAO extends DAO {
             v = new VetModel(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"));
         }
         rs.close();
+        stmt.close();
         closeConnection(conn);
         return v;
     }
@@ -63,6 +68,7 @@ public class VetDAO extends DAO {
             PreparedStatement stmt = conn.prepareStatement("delete from vets where id = ?");
             stmt.setLong(1, id);
             stmt.execute();
+            stmt.close();
         }
 
         closeConnection(conn);
