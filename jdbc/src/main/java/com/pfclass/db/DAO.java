@@ -14,7 +14,9 @@ public class DAO {
     private static final Logger log = LoggerFactory.getLogger(DAO.class);
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/petclinic?useSSL=false","root","example");
+        //return DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/petclinic?useSSL=false","root","example");
+
+        return DriverManager.getConnection("jdbc:sqlite:"+DAO.class.getResource("/db/sqlite/petclinic.db").getFile());
     }
 
     public Connection getPooledConnection() throws IOException, SQLException {
