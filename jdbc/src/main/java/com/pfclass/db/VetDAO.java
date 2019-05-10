@@ -49,8 +49,8 @@ public class VetDAO extends DAO<VetModel> {
     }
 
     public List<VetModel> findAll() {
-        return find("select * from " + VetModel.getTableName(), (ResultSet rs) -> {
-            try {
+        return find("select * from " + VetModel.getTableName(), (PreparedStatement stmt) -> {
+            try(ResultSet rs = stmt.executeQuery()) {
                 List<VetModel> vets = new ArrayList<VetModel>();
                 while (rs.next()) {
                     vets.add(loadVet(rs));
@@ -59,6 +59,27 @@ public class VetDAO extends DAO<VetModel> {
             } catch (SQLException e) {
                 log.error("Error  ", e);
             }
+            return null;
+        });
+    }
+
+    public List<VetModel> findByLastName(String lastname) {
+        return find("select * from " + VetModel.getTableName() + " where last_name = ?", (PreparedStatement stmt) -> {
+            try {
+                stmt.setString(1, lastname);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    List<VetModel> vets = new ArrayList<VetModel>();
+                    while (rs.next()) {
+                        vets.add(loadVet(rs));
+                    }
+                    return vets;
+                } catch (SQLException e) {
+                    log.error("Error  ", e);
+                }
+            } catch (SQLException e) {
+                log.error("Error  ", e);
+            }
+
             return null;
         });
     }

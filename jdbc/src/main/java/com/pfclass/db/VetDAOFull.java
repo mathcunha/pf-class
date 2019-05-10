@@ -27,7 +27,6 @@ public class VetDAOFull {
 
                 VetModel v = null;
                 if (stmt.execute()) {
-                    conn.commit();
                     v = vet;
                 }
 
@@ -73,7 +72,37 @@ public class VetDAOFull {
     public List<VetModel> findAll() {
         try (Connection conn = ConnectionFactory.getConnection()) {
 
-            try (PreparedStatement stmt = conn.prepareStatement("select * from  vets where id = ?")) {
+            try (PreparedStatement stmt = conn.prepareStatement("select * from vets")) {
+
+                try (ResultSet rs = stmt.executeQuery()) {
+
+                    List<VetModel> vets = new ArrayList<VetModel>();
+                    while (rs.next()) {
+                        vets.add(loadVet(rs));
+                    }
+                    return vets;
+
+                } catch (SQLException e) {
+                    log.error("Error reading vets ", e);
+                    return null;
+                }
+
+            } catch (SQLException e) {
+                log.error("PreparedStatement ", e);
+                return null;
+            }
+        } catch (SQLException e) {
+            log.error("Error opening connection ", e);
+            return null;
+        }
+    }
+
+    public List<VetModel> findByLastName(String lastName) {
+        try (Connection conn = ConnectionFactory.getConnection()) {
+
+            try (PreparedStatement stmt = conn.prepareStatement("select * from vets where last_name = ?")) {
+
+                stmt.setString(1, lastName);
 
                 try (ResultSet rs = stmt.executeQuery()) {
 
@@ -109,7 +138,6 @@ public class VetDAOFull {
                 if (stmt.executeUpdate() > 0) {
                     v = vet;
                 }
-                conn.commit();
                 return v;
             } catch (SQLException e) {
                 log.error("PreparedStatement ", e);
@@ -129,7 +157,6 @@ public class VetDAOFull {
                 try (PreparedStatement stmt = conn.prepareStatement("delete from vets where id = ?")) {
                     stmt.setLong(1, id);
                     stmt.execute();
-                    conn.commit();
                 } catch (SQLException e) {
                     log.error("PreparedStatement ", e);
                     return null;

@@ -30,4 +30,9 @@ class VetDAOFullTest {
     void delete(){
         assertEquals(v , dao.delete(v.getId()));
     }
+
+    @Test
+    void findByLastName()  {
+        assertEquals(v , dao.findByLastName(v.getLastName()).get(0));
+    }
 }

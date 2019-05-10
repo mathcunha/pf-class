@@ -35,15 +35,10 @@ public class DAO<T>{
         return null;
     }
 
-    protected List<T> find(String sql, Function<ResultSet, List<T>> action){
+    protected List<T> find(String sql, Function<PreparedStatement, List<T>> action){
         try(var conn = getConnection()){
             try(var stmt = conn.prepareStatement(sql)){
-                try(var rs = stmt.executeQuery()) {
-                    return action.apply(rs);
-                }
-                catch(SQLException e){
-                    log.error("Error finding ", e);
-                }
+                    return action.apply(stmt);
             }catch(SQLException e){
                 log.error("Error creating statement ", e);
             }
