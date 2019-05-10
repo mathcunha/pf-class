@@ -1,6 +1,8 @@
 package com.pfclass.jpa;
 
+import com.pfclass.jpa.entity.Specialty;
 import com.pfclass.jpa.entity.Vet;
+import com.pfclass.jpa.repository.SpecialtyRepository;
 import com.pfclass.jpa.repository.VetDAO;
 import com.pfclass.jpa.repository.VetRepository;
 import org.slf4j.Logger;
@@ -21,7 +23,7 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner demo(VetDAO repository) {
+    public CommandLineRunner demoVet(VetDAO repository) {
         return (args) -> {
             // save a couple of vets
             repository.save(new Vet("Jack", "Bauer"));
@@ -53,6 +55,40 @@ public class Application {
             repository.findByLastName("Bauer").forEach(bauer -> {
                 log.info(bauer.toString());
             });
+            // for (Vet bauer : repository.findByLastName("Bauer")) {
+            // 	log.info(bauer.toString());
+            // }
+            log.info("");
+        };
+    }
+
+    @Bean
+    public CommandLineRunner demoSpecialty(SpecialtyRepository repository) {
+        return (args) -> {
+            // save a couple of vets
+            repository.save(new Specialty("Anesthesia"));
+            repository.save(new Specialty("Behavior"));
+            repository.save(new Specialty("Dermatology"));
+            repository.save(new Specialty("Dentistry"));
+            repository.save(new Specialty("Animal Welfare"));
+
+            // fetch all vets
+            log.info("Vets found with findAll():");
+            log.info("-------------------------------");
+            for (Specialty spec : repository.findAll()) {
+                log.info(spec.toString());
+            }
+            log.info("");
+
+            // fetch an individual vet by ID
+            repository.findById(1L)
+                    .ifPresent(vet -> {
+                        log.info("Vet found with findById(1L):");
+                        log.info("--------------------------------");
+                        log.info(vet.toString());
+                        log.info("");
+                    });
+
             // for (Vet bauer : repository.findByLastName("Bauer")) {
             // 	log.info(bauer.toString());
             // }
