@@ -18,9 +18,7 @@ public class VetDAOFull {
 
     public VetModel insert(VetModel vet) {
         //TODO - https://www.journaldev.com/2489/jdbc-statement-vs-preparedstatement-sql-injection-example
-
         try (Connection conn = ConnectionFactory.getConnection()) {
-
             try (PreparedStatement stmt = conn.prepareStatement("insert into vets values (?, ?, ?)")) {
                 int i = 1;
                 stmt.setLong(i++, vet.getId());
@@ -44,19 +42,28 @@ public class VetDAOFull {
         }
     }
 
-    public VetModel findById(Long id) throws SQLException {
-        Connection conn = ConnectionFactory.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select * from  vets where id = ?");
-        stmt.setLong(1, id);
-        ResultSet rs = stmt.executeQuery();
-        VetModel v = null;
-        if (rs.next()) {
-            v = new VetModel(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"));
+    public VetModel findById(Long id) {
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement("select * from  vets where id = ?")) {
+                stmt.setLong(1, id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    VetModel v = null;
+                    if (rs.next()) {
+                        v = new VetModel(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"));
+                    }
+                    return v;
+                } catch (SQLException e) {
+                    log.error("error reading table ", e);
+                    return null;
+                }
+            } catch (SQLException e) {
+                log.error("PreparedStatement ", e);
+                return null;
+            }
+        } catch (SQLException e) {
+            log.error("Error opening connection ", e);
+            return null;
         }
-        rs.close();
-        stmt.close();
-        conn.close();
-        return v;
     }
 
     private VetModel loadVet(ResultSet rs) throws SQLException {
@@ -82,7 +89,7 @@ public class VetDAOFull {
                 }
 
             } catch (SQLException e) {
-                log.error("Error reading vets ", e);
+                log.error("PreparedStatement ", e);
                 return null;
             }
         } catch (SQLException e) {
@@ -91,34 +98,47 @@ public class VetDAOFull {
         }
     }
 
-    public VetModel update(VetModel vet) throws SQLException {
-        Connection conn = ConnectionFactory.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("update vets set first_name = ?, last_name = ? where id = ?");
-        int i = 1;
-        stmt.setString(i++, vet.getFirstName());
-        stmt.setString(i++, vet.getLastName());
-        stmt.setLong(i++, vet.getId());
-        VetModel v = null;
-        if (stmt.executeUpdate() > 0) {
-            v = vet;
+    public VetModel update(VetModel vet) {
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement("update vets set first_name = ?, last_name = ? where id = ?")) {
+                int i = 1;
+                stmt.setString(i++, vet.getFirstName());
+                stmt.setString(i++, vet.getLastName());
+                stmt.setLong(i++, vet.getId());
+                VetModel v = null;
+                if (stmt.executeUpdate() > 0) {
+                    v = vet;
+                }
+                conn.commit();
+                return v;
+            } catch (SQLException e) {
+                log.error("PreparedStatement ", e);
+                return null;
+            }
+        } catch (SQLException e) {
+            log.error("Error opening connection ", e);
+            return null;
         }
-        stmt.close();
-        conn.close();
-        return v;
     }
 
-    public VetModel delete(Long id) throws SQLException, IOException {
-        Connection conn = ConnectionFactory.getPooledConnection();
-        VetModel v = findById(id);
+    public VetModel delete(Long id) {
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            VetModel v = findById(id);
 
-        if (v != null) {
-            PreparedStatement stmt = conn.prepareStatement("delete from vets where id = ?");
-            stmt.setLong(1, id);
-            stmt.execute();
-            stmt.close();
+            if (v != null) {
+                try (PreparedStatement stmt = conn.prepareStatement("delete from vets where id = ?")) {
+                    stmt.setLong(1, id);
+                    stmt.execute();
+                    conn.commit();
+                } catch (SQLException e) {
+                    log.error("PreparedStatement ", e);
+                    return null;
+                }
+            }
+            return v;
+        } catch (SQLException e) {
+            log.error("Error opening connection ", e);
+            return null;
         }
-
-        conn.close();
-        return v;
     }
 }

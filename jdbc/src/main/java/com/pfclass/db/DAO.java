@@ -14,16 +14,16 @@ public class DAO<T>{
     protected static final Logger log = LoggerFactory.getLogger(DAO.class);
 
     protected Connection getConnection() throws SQLException {
-        return ConnectionFactory.getConnection();
-    }
-
-    protected Connection getPooledConnection() throws IOException, SQLException {
-        return ConnectionFactory.getPooledConnection();
+        try {
+            return ConnectionFactory.getPooledConnection();
+        } catch (IOException e) {
+            log.error("error loading Hiraki pool", e);
+            return null;
+        }
     }
 
     protected T persist(String sql, Function<PreparedStatement, T> action){
         try(var conn = getConnection()){
-            conn.setAutoCommit(Boolean.TRUE);
             try(var stmt = conn.prepareStatement(sql)){
                 return action.apply(stmt);
             }catch(SQLException e){
@@ -37,7 +37,6 @@ public class DAO<T>{
 
     protected List<T> find(String sql, Function<ResultSet, List<T>> action){
         try(var conn = getConnection()){
-            conn.setAutoCommit(Boolean.TRUE);
             try(var stmt = conn.prepareStatement(sql)){
                 try(var rs = stmt.executeQuery()) {
                     return action.apply(rs);
@@ -56,7 +55,6 @@ public class DAO<T>{
 
     protected void delete(String tableName, Long id)  {
         try(var conn = getConnection()){
-            conn.setAutoCommit(Boolean.TRUE);
             try(var stmt = conn.createStatement()){
                 stmt.execute(String.format("delete from %s where id = %d", tableName, id));
             }catch(SQLException e){
@@ -69,7 +67,6 @@ public class DAO<T>{
 
     protected T findById(String tableName, Long id, Function<ResultSet, T> action){
         try(var conn = getConnection()){
-            conn.setAutoCommit(Boolean.TRUE);
             try(var stmt = conn.createStatement()){
                 try(var rs = stmt.executeQuery(String.format("select * from %s where id = %d", tableName, id))){
                     return action.apply(rs);
@@ -82,5 +79,4 @@ public class DAO<T>{
         }
         return null;
     }
-
 }

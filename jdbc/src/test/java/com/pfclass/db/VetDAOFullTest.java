@@ -3,12 +3,11 @@ package com.pfclass.db;
 import com.pfclass.model.VetModel;
 import org.junit.jupiter.api.Test;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class VetDAOTest {
+class VetDAOFullTest {
 
-    VetDAO dao = new VetDAO();
+    VetDAOFull dao = new VetDAOFull();
     VetModel v = new VetModel(1l, "Susan", " Kelleher");
 
     @Test
