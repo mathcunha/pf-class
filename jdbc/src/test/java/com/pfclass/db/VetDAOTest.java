@@ -14,23 +14,23 @@ class VetDAOTest {
     VetModel v = new VetModel(1l, "Susan", " Kelleher");
 
     @Test
-    void insert() throws SQLException {
+    void insert()  {
         dao.insert(v);
     }
 
     @Test
-    void getById() throws SQLException, InterruptedException {
-        assertEquals(v , dao.getById(v.getId()));
+    void getById()  {
+        assertEquals(v , dao.findById(v.getId()));
     }
 
     @Test
-    void update() throws SQLException {
+    void update(){
         v.setFirstName("Dr. "+v.getFirstName());
         assertEquals(v , dao.update(v));
     }
 
     @Test
-    void delete() throws SQLException, IOException {
+    void delete(){
         assertEquals(v , dao.delete(v.getId()));
     }
 }
