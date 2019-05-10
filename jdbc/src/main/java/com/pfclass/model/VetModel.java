@@ -1,6 +1,8 @@
 package com.pfclass.model;
 
+@TableName("vets")
 public class VetModel {
+
     private Long id;
     private String firstName;
     private String lastName;
@@ -56,5 +58,10 @@ public class VetModel {
         VetModel vet = (VetModel) obj;
 
         return vet.getId().equals(this.getId()) && vet.getLastName().equals(this.getLastName()) && vet.getFirstName().equals(this.getFirstName());
+    }
+
+    public static String getTableName(){
+        TableName tableName = VetModel.class.getAnnotation(TableName.class);
+        return tableName.value();
     }
 }

@@ -1,6 +1,8 @@
 package com.pfclass.db;
 
 import com.pfclass.model.VetModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -10,13 +12,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VetDAODidatico extends DAO<VetModel> {
-    public VetModel insert(VetModel vet)  {
+public class VetDAOFull {
+
+    protected final Logger log = LoggerFactory.getLogger(VetDAOFull.class);
+
+    public VetModel insert(VetModel vet) {
         //TODO - https://www.journaldev.com/2489/jdbc-statement-vs-preparedstatement-sql-injection-example
 
-        try(Connection conn = getConnection()) {
+        try (Connection conn = ConnectionFactory.getConnection()) {
 
-            try(PreparedStatement stmt = conn.prepareStatement("insert into vets values (?, ?, ?)")) {
+            try (PreparedStatement stmt = conn.prepareStatement("insert into vets values (?, ?, ?)")) {
                 int i = 1;
                 stmt.setLong(i++, vet.getId());
                 stmt.setString(i++, vet.getFirstName());
@@ -29,51 +34,65 @@ public class VetDAODidatico extends DAO<VetModel> {
                 }
 
                 return v;
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 log.error("PreparedStatement ", e);
                 return null;
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             log.error("Error opening connection ", e);
             return null;
         }
     }
 
     public VetModel findById(Long id) throws SQLException {
-        Connection conn = getConnection();
+        Connection conn = ConnectionFactory.getConnection();
         PreparedStatement stmt = conn.prepareStatement("select * from  vets where id = ?");
         stmt.setLong(1, id);
         ResultSet rs = stmt.executeQuery();
         VetModel v = null;
-        if(rs.next()){
+        if (rs.next()) {
             v = new VetModel(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"));
         }
         rs.close();
         stmt.close();
-        closeConnection(conn);
+        conn.close();
         return v;
     }
 
+    private VetModel loadVet(ResultSet rs) throws SQLException {
+        return new VetModel(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"));
+    }
 
-    public VetModel findAll() {
-        try(Connection conn = getConnection()){
-            List<VetModel> vets = new ArrayList<>();
+    public List<VetModel> findAll() {
+        try (Connection conn = ConnectionFactory.getConnection()) {
 
-            try(PreparedStatement stmt = conn.prepareStatement("select * from  vets where id = ?")){
-                return null;
+            try (PreparedStatement stmt = conn.prepareStatement("select * from  vets where id = ?")) {
 
-            }catch(SQLException e){
+                try (ResultSet rs = stmt.executeQuery()) {
+
+                    List<VetModel> vets = new ArrayList<VetModel>();
+                    while (rs.next()) {
+                        vets.add(loadVet(rs));
+                    }
+                    return vets;
+
+                } catch (SQLException e) {
+                    log.error("Error reading vets ", e);
+                    return null;
+                }
+
+            } catch (SQLException e) {
                 log.error("Error reading vets ", e);
                 return null;
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             log.error("Error opening connection ", e);
             return null;
         }
     }
 
     public VetModel update(VetModel vet) throws SQLException {
-        Connection conn = getConnection();
+        Connection conn = ConnectionFactory.getConnection();
         PreparedStatement stmt = conn.prepareStatement("update vets set first_name = ?, last_name = ? where id = ?");
         int i = 1;
         stmt.setString(i++, vet.getFirstName());
@@ -84,22 +103,22 @@ public class VetDAODidatico extends DAO<VetModel> {
             v = vet;
         }
         stmt.close();
-        closeConnection(conn);
+        conn.close();
         return v;
     }
 
     public VetModel delete(Long id) throws SQLException, IOException {
-        Connection conn = getPooledConnection();
+        Connection conn = ConnectionFactory.getPooledConnection();
         VetModel v = findById(id);
 
-        if(v != null){
+        if (v != null) {
             PreparedStatement stmt = conn.prepareStatement("delete from vets where id = ?");
             stmt.setLong(1, id);
             stmt.execute();
             stmt.close();
         }
 
-        closeConnection(conn);
+        conn.close();
         return v;
     }
 }
