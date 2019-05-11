@@ -1,6 +1,8 @@
 package com.pfclass.jpa.entity;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "specialties")
@@ -10,7 +12,18 @@ public class Specialty {
     private Long id;
     private String name;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "vet_specialties",
+            joinColumns = @JoinColumn(name = "specialty_id"),
+            inverseJoinColumns = @JoinColumn(name = "vet_id"))
+    List<Vet> vets;
+
     protected Specialty() {}
+
+    public List<Vet> getVets(){
+        return vets;
+    }
 
     public Specialty(String name) {
         this.name= name;

@@ -1,6 +1,7 @@
 package com.pfclass.jpa.entity;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "vets")
@@ -12,11 +13,26 @@ public class Vet {
     private String firstName;
     private String lastName;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "vet_specialties",
+            joinColumns = @JoinColumn(name = "vet_id"),
+            inverseJoinColumns = @JoinColumn(name = "specialty_id"))
+    Set<Specialty> specialties;
+
     protected Vet() {}
 
     public Vet(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public Set<Specialty> getSpecialties(){
+        return specialties;
+    }
+
+    public void setSpecialties(Set<Specialty> specialties){
+        this.specialties = specialties;
     }
 
     @Override

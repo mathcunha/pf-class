@@ -96,4 +96,24 @@ public class Application {
         };
     }
 
+    @Bean
+    public CommandLineRunner demoSpecialtyVets(SpecialtyRepository specRep, VetRepository vetRep) {
+        return (args) -> {
+            // fetch an individual vet by ID
+            vetRep.findById(1L)
+                    .ifPresent((Vet vet) -> {
+                        specRep.findById(6L).ifPresent(spec ->{
+                            vet.getSpecialties().add(spec);
+                            vetRep.save(vet);
+                                }
+                                );
+                    });
+
+            // for (Vet bauer : repository.findByLastName("Bauer")) {
+            // 	log.info(bauer.toString());
+            // }
+            log.info("");
+        };
+    }
+
 }
