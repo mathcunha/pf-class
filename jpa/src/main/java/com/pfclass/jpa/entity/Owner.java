@@ -1,6 +1,7 @@
 package com.pfclass.jpa.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "owners")
@@ -14,6 +15,9 @@ public class Owner {
     private String address;
     private String city;
     private String telephone;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    private List<Pet> pets;
 
     protected Owner(){};
 
@@ -79,5 +83,13 @@ public class Owner {
                 ", city='" + city + '\'' +
                 ", telephone='" + telephone + '\'' +
                 '}';
+    }
+
+    public List<Pet> getPets() {
+        return pets;
+    }
+
+    public void setPets(List<Pet> pets) {
+        this.pets = pets;
     }
 }

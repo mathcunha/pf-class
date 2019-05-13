@@ -6,6 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "pets")
+@NamedQuery(name = "Pet.findByIdAndFetchVisitsEagerly", query = "SELECT p FROM Pet p JOIN FETCH p.visits WHERE p.id = (:id)")
 public class Pet {
     protected Pet(){};
 

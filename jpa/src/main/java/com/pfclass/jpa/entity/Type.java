@@ -5,6 +5,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "types")
+@NamedQuery(name = "Type.findByIdAndFetchPetsEagerly", query = "SELECT t FROM Type t JOIN FETCH t.pets WHERE t.id = (:id)")
 public class Type {
 
     protected Type(){};

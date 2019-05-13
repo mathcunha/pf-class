@@ -9,9 +9,7 @@ import java.util.List;
 
 public interface PetRepository extends CrudRepository<Pet, Long> {
     //TODO - https://www.baeldung.com/spring-data-jpa-query
-
     List<Pet> findByName(String name);
 
-    @Query("SELECT p FROM Pet p JOIN FETCH p.visits WHERE p.id = (:id)")
-    public Pet findByIdAndFetchVisitsEagerly(@Param("id") Long id);
+    Pet findByIdAndFetchVisitsEagerly(@Param("id") Long id);
 }
