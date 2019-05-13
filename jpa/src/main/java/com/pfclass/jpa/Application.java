@@ -1,9 +1,7 @@
 package com.pfclass.jpa;
 
-import com.pfclass.jpa.entity.Specialty;
-import com.pfclass.jpa.entity.Vet;
-import com.pfclass.jpa.repository.SpecialtyRepository;
-import com.pfclass.jpa.repository.VetRepository;
+import com.pfclass.jpa.entity.*;
+import com.pfclass.jpa.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +10,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -103,6 +104,26 @@ public class Application {
             // 	log.info(bauer.toString());
             // }
             log.info("");
+        };
+    }
+
+    @Bean
+    public CommandLineRunner demoPet(TypeRepository typeRepository, PetRepository petRepository, OwnerRepository ownerRepository, VisitRepository visitRepository) {
+        return (args) -> {
+            Type type = typeRepository.save(new Type("Bulldog"));
+            Owner owner = ownerRepository.save(new Owner("Jack", "Bauer","street #", "Santa Barbara","+55 95 58569352"));
+
+            LocalDate birthDate = LocalDate.of(2015, 02, 20);
+
+            Pet pet = new Pet("Rex", Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            pet.setOwner(owner);
+            pet.setType(type);
+
+            pet = petRepository.save(pet);
+
+            Visit visit = visitRepository.save(new Visit("one person", new Date(), pet));
+
+            petRepository.findByIdAndFetchVisitsEagerly(pet.getId()).getVisits().forEach(lVisit -> log.info(lVisit.toString()));
         };
     }
 }
