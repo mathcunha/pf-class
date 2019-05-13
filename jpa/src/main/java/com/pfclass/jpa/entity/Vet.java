@@ -10,7 +10,25 @@ public class Vet {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     private String firstName;
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     private String lastName;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -18,7 +36,7 @@ public class Vet {
             name = "vet_specialties",
             joinColumns = @JoinColumn(name = "vet_id"),
             inverseJoinColumns = @JoinColumn(name = "specialty_id"))
-    Set<Specialty> specialties;
+    private Set<Specialty> specialties;
 
     protected Vet() {}
 

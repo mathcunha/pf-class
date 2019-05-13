@@ -12,12 +12,20 @@ public class Specialty {
     private Long id;
     private String name;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "vet_specialties",
             joinColumns = @JoinColumn(name = "specialty_id"),
             inverseJoinColumns = @JoinColumn(name = "vet_id"))
-    List<Vet> vets;
+    private List<Vet> vets;
 
     protected Specialty() {}
 
@@ -34,5 +42,9 @@ public class Specialty {
         return String.format(
                 "Specialty[id=%d, name='%s']",
                 id, name);
+    }
+
+    public void setVets(List<Vet> vets) {
+        this.vets = vets;
     }
 }
