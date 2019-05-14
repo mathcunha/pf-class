@@ -12,8 +12,9 @@ public class Owner {
     private Long id;
     private String firstName;
     private String lastName;
-    private String address;
-    private String city;
+
+    @Embedded
+    private Address address;
     private String telephone;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
@@ -21,11 +22,10 @@ public class Owner {
 
     protected Owner(){};
 
-    public Owner(String firstName, String lastName, String address, String city, String telephone) {
+    public Owner(String firstName, String lastName, Address address, String telephone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
-        this.city = city;
         this.telephone = telephone;
     }
 
@@ -49,20 +49,12 @@ public class Owner {
         this.lastName = lastName;
     }
 
-    public String getAddress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(Address address) {
         this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public String getTelephone() {
@@ -80,7 +72,6 @@ public class Owner {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", address='" + address + '\'' +
-                ", city='" + city + '\'' +
                 ", telephone='" + telephone + '\'' +
                 '}';
     }

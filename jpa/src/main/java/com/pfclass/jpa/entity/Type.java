@@ -15,7 +15,7 @@ public class Type {
     private Long id;
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "type")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "type",cascade = {CascadeType.REFRESH})
     private List<Pet> pets;
 
     public String getName() {

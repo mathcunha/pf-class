@@ -111,7 +111,7 @@ public class Application {
     public CommandLineRunner demoPet(TypeRepository typeRepository, PetRepository petRepository, OwnerRepository ownerRepository, VisitRepository visitRepository) {
         return (args) -> {
             Type type = typeRepository.save(new Type("Bulldog"));
-            Owner owner = ownerRepository.save(new Owner("Jack", "Bauer","street #", "Santa Barbara","+55 95 58569352"));
+            Owner owner = ownerRepository.save(new Owner("Jack", "Bauer",new Address("street #", "Santa Barbara"),"+55 95 58569352"));
 
             LocalDate birthDate = LocalDate.of(2015, 02, 20);
 
