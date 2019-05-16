@@ -19,6 +19,7 @@ public class Vet {
         this.firstName = firstName;
     }
 
+    @Column(nullable = false)
     private String firstName;
 
     public String getLastName() {
@@ -29,7 +30,12 @@ public class Vet {
         this.lastName = lastName;
     }
 
+    @Column(nullable = false)
     private String lastName;
+
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -53,11 +59,25 @@ public class Vet {
         this.specialties = specialties;
     }
 
-    @Override
-    public String toString() {
-        return String.format(
-                "Vet[id=%d, firstName='%s', lastName='%s']",
-                id, firstName, lastName);
+    public Long getVersion() {
+        return version;
     }
 
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Vet{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", version=" + version +
+                '}';
+    }
 }

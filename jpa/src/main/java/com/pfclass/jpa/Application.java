@@ -126,4 +126,23 @@ public class Application {
             petRepository.findByIdAndFetchVisitsEagerly(pet.getId()).getVisits().forEach(lVisit -> log.info(lVisit.toString()));
         };
     }
+
+    @Bean
+    public CommandLineRunner optimisticLock(VetRepository vetRepository) {
+        return (args) -> {
+            Vet vet = vetRepository.save(new Vet("Jack", "Bauer"));
+
+            log.info(vet.toString());
+
+            vet.setFirstName("John");
+            Vet vetUpdated = vetRepository.save(vet);
+
+            log.info(vetUpdated.toString());
+
+            vet.setFirstName("Jack");
+            vet = vetRepository.save(vet);
+
+            log.info(vet.toString());
+        };
+    }
 }
